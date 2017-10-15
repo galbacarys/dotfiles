@@ -11,7 +11,7 @@
 "	Note: This might work automagically now. NO GUARANTEES THOUGH.
 " 2) Open Vim and run :PluginInstall to install all the plugins needed.
 "	Note: This might work automagically now. NO GUARANTEES THOUGH.
-" 3) Set up YouCompleteMe. This requires doing the following:
+" 3) Set up YouCompleteMe (Vim only). This requires doing the following:
 "	cd ~/.vim/bundle/YouCompleteMe
 "	python install.py --clang-completer
 "	** You may omit the last argument if you don't want to have C-family
@@ -25,6 +25,7 @@
 " 6) Install ag. Install ctags. Both are insanely useful, you won't regret it.
 " 7) (If you want python syntax checks) install pylint and pylint-django
 " 8) (If you want Ruby syntax checks) install rubocop
+" 9) (If you want JS completion) install tern
 "
 " Read through the entire file before proceeding, it's important to know what
 " everything does, at least in general.
@@ -39,25 +40,31 @@
 " AUTO-SETUP MAGICS {{{
 " We'll detect which vim derivative we're using (vim vs. nvim)
 if has('nvim')
-	" and set the path to the config root
-	let s:editor_root=expand("~/.config/nvim")
+	" and set the path to plug
+	let s:plug_root=expand("~/.local/share/nvim/site/autoload/plug.vim")
 else
-	let s:editor_root=expand("~/.vim")
+	let s:plug_root=expand("~/.vim/autoload/plug.vim")
 endif
 
-" Then we can set up Vundle
-let s:vundle_installed=1
-let s:vundle_readme=s:editor_root . '/bundle/Vundle.vim/README.md'
-if !filereadable(s:vundle_readme)
-	echo "Installing Vundle, please wait!"
+" Then we can set up Plug
+let s:plug_installed=1
+if !filereadable(s:plug_root)
+	echo "Installing Plug, please wait!"
 	echo ""
-	silent call mkdir(s:editor_root . '/bundle', "p")
-	silent execute "!git clone https://github.com/VundleVim/Vundle.vim " . s:editor_root . "/bundle/Vundle.vim"
-	let s:vundle_installed=0
+	if has('nvim')
+		silent execute "!curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+	else
+		silent execute "!curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+	endif
+	let s:plug_installed=0
 endif
-let s:vundle_path=s:editor_root . '/bundle/Vundle.vim'
-let &rtp = &rtp . ',' . s:editor_root . '/bundle/Vundle.vim'
-call vundle#rc(s:editor_root . '/bundle')
+let &rtp = &rtp . ',' . s:plug_root
+
+if has('nvim')
+	call plug#begin('~/.local/share/nvim/site/plugs')
+else
+	call plug#begin('~/.vim/plugs')
+endif
 " }}}
 
 " PREAMBLE {{{
@@ -68,121 +75,132 @@ set t_ut=                     " Fix background color issues in Tmux
 " }}}
 
 " PLUGINZ {{{
-" One of the plugins you should always have set up. Manages installation of
-" plugins and manipulation of Vim's runtime path.
-Plugin 'VundleVim/Vundle.vim'
-
 " Provides a neat project drawer, accessible through :NERDTreeToggle or <spc>ft
-Plugin 'scrooloose/nerdtree'
+Plug 'scrooloose/nerdtree'
 " Makes NERDTree a little easier to use
-Plugin 'jistr/vim-nerdtree-tabs'
+Plug 'jistr/vim-nerdtree-tabs'
 
-" Provides that super-neat modeline at the bottom and top o the screen
-Plugin 'vim-airline/vim-airline'
+" Provides that super-neat modeline at the bottom and top of the screen
+Plug 'vim-airline/vim-airline'
 
 " A soothing colorscheme for angry people
-Plugin 'josuegaleas/jay'
+Plug 'josuegaleas/jay'
 
 " The Tim Pope collection: provides lots of fancy features that Vim should
 " just include at this point. Tim Pope is basically Bram Moolenaar 2.0.
 " vim-fugitive: provides git integration through e.g. :Gstatus and :Gcommit
 " Notes:
 "	in Gstatus use the `-' key to stage/unstage a file.
-Plugin 'tpope/vim-fugitive'
+Plug 'tpope/vim-fugitive'
 " vim-surround: too complicated to explain fully, but here's the gist: it
 " allows you to manipulate the surroundings of a text object. For example,
 " <word> => [word] by using the commands `cs<[' when cursor anywhere on word
-Plugin 'tpope/vim-surround'
+Plug 'tpope/vim-surround'
 " Some sensible defaults that *definitely* should be part of Vim proper.
-Plugin 'tpope/vim-sensible'
+Plug 'tpope/vim-sensible'
 " Short version: gcc comments/uncomments lines. gc takes a motion/count.
-Plugin 'tpope/vim-commentary'
+Plug 'tpope/vim-commentary'
+" Support for the God language
+Plug 'tpope/vim-fireplace'
 
 " GitGutter gives you indicators on the left fringe ("gutter") of your
 " window telling you which lines have been changed.
-Plugin 'airblade/vim-gitgutter'
+Plug 'airblade/vim-gitgutter'
 
 " Turns out vim saves an awesome tree of your undo history. This plugin
 " lets you visualize it.
-Plugin 'mbbill/undotree'
+Plug 'mbbill/undotree'
 
 " Repeatedly pressing `v' causes the region you're highlighting to
 " expand. Just try it.
-Plugin 'terryma/vim-expand-region'
+Plug 'terryma/vim-expand-region'
 
 " CtrlP is a fuzzy finder. Type to narrow down what you want to find and hit
 " enter when you find it.
-Plugin 'kien/ctrlp.vim'
+Plug 'kien/ctrlp.vim'
 
-" YouCompleteMe, the only decent autocomplete solution for Vim
-" It's really not great, but there isn't anything better. This requires some
-" additional setup on your part if you want to use all its features:
-" basically, cd into ~/.vim/bundle/YouCompleteMe and then run `install.py
-" --clang-completer` (omit the last arg if you don't need c-family completion)
-Plugin 'Valloric/YouCompleteMe'
-
-" Provides automagical completion for C languages (that use Makefiles)
-Plugin 'rdnetto/YCM-Generator'
+if has('nvim')
+	" For Neovim, we have deoplete, which is better! (much better!)
+Plug 'Shougo/deoplete.nvim', { 'do': 'sudo pip3 install --upgrade neovim' }
+	" Extra completion plugins for great good
+Plug 'carlitux/deoplete-ternjs', { 'do': 'sudo npm install -g tern' }
+Plug 'zchee/deoplete-jedi'
+else
+	" YouCompleteMe, the only decent autocomplete solution for Vim
+	" It's really not great, but there isn't anything better. This requires some
+	" additional setup on your part if you want to use all its features:
+	" basically, cd into ~/.vim/bundle/YouCompleteMe and then run `install.py
+	" --clang-completer` (omit the last arg if you don't need c-family completion)
+Plug 'Valloric/YouCompleteMe'
+	
+	" Provides automagical completion for C languages (that use Makefiles)
+Plug 'rdnetto/YCM-Generator'
+endif
 
 " Autocomplete parentheses and whatnot
-Plugin 'jiangmiao/auto-pairs'
+Plug 'jiangmiao/auto-pairs'
 
 " Makes go support in Vim absolutely top-notch (literally better than any
 " other language plugin I've ever seen)
-Plugin 'fatih/vim-go'
+Plug 'fatih/vim-go'
 
 " Rust plugin. I can't live without autoformat and colors...
-Plugin 'rust-lang/rust.vim'
+Plug 'rust-lang/rust.vim'
+
+" Vue.JS syntax support
+Plug 'posva/vim-vue'
 
 " Haskell support plugins
-Plugin 'bitc/vim-hdevtools'
+Plug 'bitc/vim-hdevtools'
 
 " Python-mode, decent python language support.
-Plugin 'python-mode/python-mode'
+" Plug 'python-mode/python-mode'
 
 " Better markdown support
-Plugin 'gabrielelana/vim-markdown'
+Plug 'gabrielelana/vim-markdown'
 
 " Decent (if not excellent) syntax checker. Requires separate set up of
 " external tools.
-Plugin 'vim-syntastic/syntastic.git'
+Plug 'vim-syntastic/syntastic'
 
 " Emmet: make HTTP not fucking unbearable to write in Vim
-Plugin 'mattn/emmet-vim'
+Plug 'mattn/emmet-vim'
 
 " Search plugin. Use with ack or ag to supercharge code search. (Note:
 " requires ack or ag)
-Plugin 'mileszs/ack.vim'
+Plug 'mileszs/ack.vim'
 
 " easytags-always updates your ctags in the background.
-Plugin 'xolox/vim-easytags'
+Plug 'xolox/vim-easytags'
 " Dependency for easytags
-Plugin 'xolox/vim-misc'
+Plug 'xolox/vim-misc'
 " Tagbar, a really nice way to view ctags. Toggle with <spc>tt
-Plugin 'majutsushi/tagbar'
+Plug 'majutsushi/tagbar'
 " A plugin for Godot engine's syntax. It ain't fancy but it's good enough.
-Plugin 'a-watson/vim-gdscript'
+Plug 'a-watson/vim-gdscript'
 "" Writing plugins
 " A plugin for distraction-free writing.
-Plugin 'junegunn/goyo.vim'
+Plug 'junegunn/goyo.vim'
 " A wiki-ing plugin to make note taking easier
-Plugin 'vimwiki/vimwiki'
+Plug 'vimwiki/vimwiki'
 
 " A minimap sublime-style. It's kinda silly, but I like it.
-Plugin 'severin-lemaignan/vim-minimap'
+Plug 'severin-lemaignan/vim-minimap'
 
 " easymotion. type spc-spc-w and see what happens.
-Plugin 'easymotion/vim-easymotion'
+Plug 'easymotion/vim-easymotion'
 
+" Theeeeemes
+Plug 'flazz/vim-colorschemes'
 " }}}
 
 " MORE PREAMBLE {{{
-call vundle#end()            " required
+call plug#end()
 
-if !s:vundle_installed
+if !s:plug_installed
 	echo "Installing plugins..."
 	echo ""
-	execute "PluginInstall"
+	execute "PlugInstall"
 endif
 
 filetype plugin indent on    " required
@@ -195,10 +213,8 @@ syntax on
 " Syntax highlighting: enable 256 colors and pick a theme
 set t_Co=256 " because what the fuck terminal doesn't have 256 colors these
 " days? It's not like I'm using a VT-100 or something
-" This is where the actual theme is picked. Jay is sort of a molokai-flavoured
-" opaque color scheme that looks really nice imho. But substitute your own as
-" you want.
-colorscheme jay
+" This is where the actual theme is picked. I change this frequently.
+colorscheme xoria256
 set background=dark
 " }}}
 
@@ -273,6 +289,14 @@ set smartcase
 " screen boundaries
 " Play around with it on a long file and you'll see what I mean
 set scrolloff=5
+
+" Persistent Undo. This is insanely important even though I ignored it for years...
+set undodir=$HOME/.vim/vim.undo
+" let's go ahead and create the undo directory if necessary
+silent call system('mkdir -p ' . &undodir)
+set undolevels=2048 " we could probably support much more than this, but 2048 undos oughta be enough for anyone
+set undoreload=16384
+set undofile
 " }}}
 " }}}
 
@@ -292,6 +316,11 @@ set modelines=5
 " to be opening a golang file, set the indentation differently because gofmt
 " hates hard tabs (and puppies, probably).
 
+" One other thing; we're probably going to keep these language specific for
+" things like Groovy, Python, JS, etc. rather than doing a set of global
+" settings because I might have very different opinions in one langugae versus
+" another.
+
 " Python augroups to force basic pep8 formatting (more or less :-P)
 au BufNewFile,BufRead *.py
 			\ setlocal tabstop=4 softtabstop=4 shiftwidth=4 textwidth=80
@@ -300,6 +329,19 @@ au BufNewFile,BufRead *.py
 " Fix the horrible markdown defaults
 au BufNewFile,BufRead *.md
 			\ setlocal textwidth=80 nospell
+
+" Set text width in Javascript
+" I like indent foldmethod in Javascript since callback hell is still a thing
+" in <CURRENTYEAR>. Also, 2 space indents!
+au BufNewFile,BufRead *.js,*.vue
+			\ setlocal textwidth=80 fdm=indent tabstop=2 softtabstop=2 
+			\ shiftwidth=2
+
+" YAML stuff-2 sapce indent looks so, so, so much better in yaml than 4. Also
+" set foldmethod to indent
+au BufNewFile,BufRead *.yml,*.yaml
+			\ setlocal tabstop=2 softtabstop=2 shiftwidth=2 fdm=indent
+
 
 " Add auto save/reload pos in case your Vim doesn't already have support enabled
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
@@ -395,6 +437,20 @@ command! Q :q
 command! Wq :wq
 command! WQ :wq
 
+" Nice light mode for if you're working outside or something
+function Light()
+	set bg=light
+	colorscheme morning
+endfunction
+command! Light :call Light()
+
+" Dark mode to switch back
+function Dark()
+	set bg=dark
+	colorscheme jay
+endfunction
+command! Dark :call Dark()
+
 " For inserting dates into files. useful for notes esp.
 command! Insertdate :r !date
 
@@ -407,23 +463,29 @@ command! Insertdate :r !date
 "
 " Basically, here be dragons.
 
-" YouCompleteMe {{{
-" Mac OS X ships with a hilariously out of date python. Let's override it with
-" the current one being used (i.e. python 3 or whatever is installed in your
-" venv)
-let g:ycm_python_binary_path='python'
-let g:ycm_server_python_interpreter='python3'
-" Fix for constantly being asked about using C completion. UNSAFE AND
-" INSECURE. YOU SHOULDN'T DO THIS UNLESS YOU DON'T CARE ABOUT SECURITY.
-" Related: run :YcmGenerateConfig in a C project to auto-generate C completion
-" tool for YouCompleteMe
-let g:ycm_confirm_extra_conf=0
-" Rust settings. VERY machine specific, THIS WILL BREAK YOUR VIM IF YOU DON'T
-" CHANGE IT.
-let g:ycm_rust_src_path='~/.cargo/sources/rust-1.13.0/src'
-" Fix Ruby completion
-let g:ycm_seed_identifiers_with_syntax=1
-" }}}
+if has('nvim')
+	" Deoplete {{{
+	call deoplete#enable()
+	" }}}
+else
+	" YouCompleteMe {{{
+	" Mac OS X ships with a hilariously out of date python. Let's override it with
+	" the current one being used (i.e. python 3 or whatever is installed in your
+	" venv)
+	let g:ycm_python_binary_path='python'
+	let g:ycm_server_python_interpreter='python3'
+	"" Fix for constantly being asked about using C completion. UNSAFE AND
+	"" INSECURE. YOU SHOULDN'T DO THIS UNLESS YOU DON'T CARE ABOUT SECURITY.
+	"" Related: run :YcmGenerateConfig in a C project to auto-generate C completion
+	"" tool for YouCompleteMe
+	let g:ycm_confirm_extra_conf=0
+	"" Rust settings. VERY machine specific, THIS WILL BREAK YOUR VIM IF YOU DON'T
+	"" CHANGE IT.
+	let g:ycm_rust_src_path='~/.cargo/sources/rust-1.13.0/src'
+	"" Fix Ruby completion
+	let g:ycm_seed_identifiers_with_syntax=1
+	" }}}
+endif
 
 " Syntastic {{{
 " Fix the behavior of warning me about every single fucking issue, and save
@@ -446,6 +508,7 @@ let g:syntastic_check_on_wq = 0
 let g:syntastic_go_checkers = ['go']
 let g:syntastic_python_checkers = ['python', 'pylint']
 let g:syntastic_ruby_checkers = ['rubocop']
+let g:syntastic_javascript_checkers = ['jshint']
 
 " Fix Django bullshit with Syntastic
 let g:syntastic_python_pylint_args = "--load-plugins pylint_django"
@@ -478,10 +541,5 @@ let g:vimwiki_list = [{'path': '~/wiki'}, {'path': './wiki'}]
 " ESOTERIC NONSENSE {{{
 " Most of the stuff below is stuff I got from random places on the internet. It
 " will likely change very frequently since it's mostly just silliness.
-
-" Make the scroll wheel undo/redo changes
-set mouse=a
-map <ScrollWheelUp> <C-r>
-map <ScrollWheelDown> u
 
 " }}}

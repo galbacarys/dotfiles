@@ -13,10 +13,13 @@
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
 # omzsh theme
-ZSH_THEME="af-magic"
+ZSH_THEME="mh"
 
 # The most basic set of plugins possible. I don't need a lot :)
-plugins=(git docker virtualenv)
+plugins=(git docker virtualenv tmuxinator)
+
+# Disable auto-titling in omzsh
+DISABLE_AUTO_TITLE="true"
 
 # The bizness end of omzsh
 source $ZSH/oh-my-zsh.sh
@@ -57,7 +60,7 @@ fi
 # Summary: run `note <title>` to make a new note
 #          run `notes` to get a fuzzy finder (if available) to view all notes
 function note() {
-	NOTE_DIR=~/notes
+	NOTE_DIR=~/Dropbox/notes
 	mkdir -p $NOTE_DIR || true
 	NOTE_NAME="$1"
 	if [[ -z $NOTE_NAME ]]; then
@@ -65,11 +68,11 @@ function note() {
 	else
 		NOTE_NAME="$(date +%Y-%m-%d)-$NOTE_NAME"
 	fi
-	vim $NOTE_DIR/$NOTE_NAME.md
+	vim $NOTE_DIR/$NOTE_NAME.txt
 }
 
 function notes() {
-	NOTE_DIR=~/notes
+	NOTE_DIR=~/Dropbox/notes
 	mkdir -p $NOTE_DIR || true
 	pushd $NOTE_DIR > /dev/null
 	# Use the fuzzy finder if available
@@ -82,48 +85,6 @@ function notes() {
 	else
 		vim .
 	fi
-	popd > /dev/null
-}
-# }}}
-
-# Private note taking {{{
-# Same thing but for my private notes repo; automatically synced with git
-function pnote() {
-	NOTE_DIR=~/privatenotes
-	test -d $NOTE_DIR || git clone $PRIVATE_NOTES_REPO $NOTE_DIR || true > /dev/null 2 >&1
-	NOTE_NAME="$1"
-	if [[ -z $NOTE_NAME ]]; then
-		NOTE_NAME="$(date +%Y-%m-%d)"
-	else
-		NOTE_NAME="$(date +%Y-%m-%d)-$NOTE_NAME"
-	fi
-	vim $NOTE_DIR/$NOTE_NAME.md
-	pushd $NOTE_DIR > /dev/null
-	git pull
-	git add $NOTE_NAME.md
-	git commit -am "updating notes"
-	git push
-	popd > /dev/null
-}
-
-function pnotes() {
-	NOTE_DIR=~/privatenotes
-	test -d $NOTE_DIR || git clone $PRIVATE_NOTES_REPO $NOTE_DIR || true > /dev/null 2 >&1
-	pushd $NOTE_DIR > /dev/null
-	# Use the fuzzy finder if available
-	if command_exists fzf; then
-		# Only open the selection if one was actually chosen
-		NOTEFILE=$(find * -type f -maxdepth 0 | fzf)
-		if [[ -n $NOTEFILE ]]; then
-			vim $NOTEFILE
-		fi
-	else
-		vim .
-	fi
-	git pull
-	git add $NOTE_NAME.md
-	git commit -am "updating notes"
-	git push
 	popd > /dev/null
 }
 # }}}
@@ -139,5 +100,20 @@ export PATH=$HOME/bin:$PATH
 # Source a local .zshrc if available, for machine-specific stuff {{{
 if [ -f $HOME/.zshrc.local ]; then
 	source $HOME/.zshrc.local
+fi
+# }}}
+
+# Some extra custom functions {{{
+alias servedir='python -mSimpleHTTPServer 8080'
+alias c='clear'
+
+# vim -> nvim remap if available
+if command_exists nvim; then
+	alias vim='nvim'
+fi
+
+# support tmuxinator
+if command_exists tmuxinator; then
+	alias mux='tmuxinator'
 fi
 # }}}
