@@ -125,6 +125,8 @@ Plug 'Shougo/deoplete.nvim', { 'do': 'sudo pip3 install --upgrade neovim' }
 	" Extra completion plugins for great good
 Plug 'carlitux/deoplete-ternjs', { 'do': 'sudo npm install -g tern' }
 Plug 'zchee/deoplete-jedi'
+	" Go completion for deoplete
+Plug 'zchee/deoplete-go', { 'do': 'make' }
 else
 	" YouCompleteMe, the only decent autocomplete solution for Vim
 	" It's really not great, but there isn't anything better. This requires some
@@ -214,7 +216,7 @@ syntax on
 set t_Co=256 " because what the fuck terminal doesn't have 256 colors these
 " days? It's not like I'm using a VT-100 or something
 " This is where the actual theme is picked. I change this frequently.
-colorscheme xoria256
+colorscheme Tomorrow-Night-Eighties
 set background=dark
 " }}}
 
@@ -270,6 +272,9 @@ inoremap jk <esc>
 " /tmp, and that's what we're going to do.
 set backupdir=/tmp//
 set directory=/tmp//
+
+" fix the stupid scrollbars in macvim
+set guioptions=
 " }}}
 
 " Enabling neat features {{{
@@ -357,8 +362,10 @@ au BufNewFile,BufRead *.wiki
 			\ set tw=9999999 wrap linebreak nolist
 
 " Fix Vim's AWFUL syntax highlighting performance for ruby files
-au BufNewFile,BufRead FileType ruby
-			\ setlocal re=1
+augroup ft_rb
+    au!
+    au FileType ruby setlocal re=1 foldmethod=manual
+augroup END
 
 au BufNewFile,BufRead Vagrantfile
 			\ setlocal re=1
@@ -465,7 +472,11 @@ command! Insertdate :r !date
 
 if has('nvim')
 	" Deoplete {{{
-	call deoplete#enable()
+	let g:deoplete#enable_at_startup = 1
+	set completeopt+=noinsert
+	let g:deoplete#sources#go#auto_goos = 1
+	let g:deoplete#sources#go#pointer = 1
+	let g:deoplete#sources#go#gocode_binary = $GOPATH."/bin/gocode"
 	" }}}
 else
 	" YouCompleteMe {{{
