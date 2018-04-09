@@ -127,6 +127,7 @@ Plug 'carlitux/deoplete-ternjs', { 'do': 'sudo npm install -g tern' }
 Plug 'zchee/deoplete-jedi'
 	" Go completion for deoplete
 Plug 'zchee/deoplete-go', { 'do': 'make' }
+Plug 'artur-shaik/vim-javacomplete2'
 else
 	" YouCompleteMe, the only decent autocomplete solution for Vim
 	" It's really not great, but there isn't anything better. This requires some
@@ -172,12 +173,6 @@ Plug 'mattn/emmet-vim'
 " requires ack or ag)
 Plug 'mileszs/ack.vim'
 
-" easytags-always updates your ctags in the background.
-Plug 'xolox/vim-easytags'
-" Dependency for easytags
-Plug 'xolox/vim-misc'
-" Tagbar, a really nice way to view ctags. Toggle with <spc>tt
-Plug 'majutsushi/tagbar'
 " A plugin for Godot engine's syntax. It ain't fancy but it's good enough.
 Plug 'a-watson/vim-gdscript'
 "" Writing plugins
@@ -340,7 +335,7 @@ au BufNewFile,BufRead *.md
 " in <CURRENTYEAR>. Also, 2 space indents!
 au BufNewFile,BufRead *.js,*.vue
 			\ setlocal textwidth=80 fdm=indent tabstop=2 softtabstop=2 
-			\ shiftwidth=2
+			\ expandtab shiftwidth=2
 
 " YAML stuff-2 sapce indent looks so, so, so much better in yaml than 4. Also
 " set foldmethod to indent
@@ -477,6 +472,9 @@ if has('nvim')
 	let g:deoplete#sources#go#auto_goos = 1
 	let g:deoplete#sources#go#pointer = 1
 	let g:deoplete#sources#go#gocode_binary = $GOPATH."/bin/gocode"
+
+	" related, but not directly Deoplete
+	autocmd FileType java setlocal omnifunc=javacomplete#Complete
 	" }}}
 else
 	" YouCompleteMe {{{
@@ -519,7 +517,7 @@ let g:syntastic_check_on_wq = 0
 let g:syntastic_go_checkers = ['go']
 let g:syntastic_python_checkers = ['python', 'pylint']
 let g:syntastic_ruby_checkers = ['rubocop']
-let g:syntastic_javascript_checkers = ['jshint']
+let g:syntastic_javascript_checkers = ['standard']
 
 " Fix Django bullshit with Syntastic
 let g:syntastic_python_pylint_args = "--load-plugins pylint_django"
