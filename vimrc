@@ -1,7 +1,6 @@
 " vim: fdm=marker
 
 " READ THIS FIRST {{{
-" Hello, and thank you for using the best VimRC...in the world.
 " There are a couple of things you'll need to do in order to make effective
 " use of this configuration:
 "
@@ -11,21 +10,9 @@
 "	Note: This might work automagically now. NO GUARANTEES THOUGH.
 " 2) Open Vim and run :PluginInstall to install all the plugins needed.
 "	Note: This might work automagically now. NO GUARANTEES THOUGH.
-" 3) Set up YouCompleteMe (Vim only). This requires doing the following:
-"	cd ~/.vim/bundle/YouCompleteMe
-"	python install.py --clang-completer
-"	** You may omit the last argument if you don't want to have C-family
-"	completion and/or you hate puppies
-" 4) (optional but highly recommended) Install ZShell.
+" 3) (optional but highly recommended) Install ZShell.
 "	brew install zsh
-" 5) (If you want the golang tools) Set up Go tools
-"	install go in some way
-"	set up a $GOPATH environment variable
-"	inside Vim, run :GoInstallBinaries
-" 6) Install ag. Install ctags. Both are insanely useful, you won't regret it.
-" 7) (If you want python syntax checks) install pylint and pylint-django
-" 8) (If you want Ruby syntax checks) install rubocop
-" 9) (If you want JS completion) install tern
+" 4) Install ag. Install ctags. Both are insanely useful, you won't regret it.
 "
 " Read through the entire file before proceeding, it's important to know what
 " everything does, at least in general.
@@ -100,8 +87,6 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-sensible'
 " Short version: gcc comments/uncomments lines. gc takes a motion/count.
 Plug 'tpope/vim-commentary'
-" Support for the God language
-Plug 'tpope/vim-fireplace'
 
 " GitGutter gives you indicators on the left fringe ("gutter") of your
 " window telling you which lines have been changed.
@@ -117,54 +102,10 @@ Plug 'terryma/vim-expand-region'
 
 " CtrlP is a fuzzy finder. Type to narrow down what you want to find and hit
 " enter when you find it.
-Plug 'kien/ctrlp.vim'
-
-if has('nvim')
-	" For Neovim, we have deoplete, which is better! (much better!)
-Plug 'Shougo/deoplete.nvim', { 'do': 'sudo pip3 install --upgrade neovim' }
-	" Extra completion plugins for great good
-Plug 'carlitux/deoplete-ternjs', { 'do': 'sudo npm install -g tern' }
-Plug 'zchee/deoplete-jedi'
-	" Go completion for deoplete
-Plug 'zchee/deoplete-go', { 'do': 'make' }
-Plug 'artur-shaik/vim-javacomplete2'
-else
-	" YouCompleteMe, the only decent autocomplete solution for Vim
-	" It's really not great, but there isn't anything better. This requires some
-	" additional setup on your part if you want to use all its features:
-	" basically, cd into ~/.vim/bundle/YouCompleteMe and then run `install.py
-	" --clang-completer` (omit the last arg if you don't need c-family completion)
-Plug 'Valloric/YouCompleteMe'
-	
-	" Provides automagical completion for C languages (that use Makefiles)
-Plug 'rdnetto/YCM-Generator'
-endif
+Plug 'ctrlpvim/ctrlp.vim'
 
 " Autocomplete parentheses and whatnot
 Plug 'jiangmiao/auto-pairs'
-
-" Makes go support in Vim absolutely top-notch (literally better than any
-" other language plugin I've ever seen)
-Plug 'fatih/vim-go'
-
-" Rust plugin. I can't live without autoformat and colors...
-Plug 'rust-lang/rust.vim'
-
-" Vue.JS syntax support
-Plug 'posva/vim-vue'
-
-" Haskell support plugins
-Plug 'bitc/vim-hdevtools'
-
-" Python-mode, decent python language support.
-" Plug 'python-mode/python-mode'
-
-" Better markdown support
-Plug 'gabrielelana/vim-markdown'
-
-" Decent (if not excellent) syntax checker. Requires separate set up of
-" external tools.
-Plug 'vim-syntastic/syntastic'
 
 " Emmet: make HTTP not fucking unbearable to write in Vim
 Plug 'mattn/emmet-vim'
@@ -173,22 +114,20 @@ Plug 'mattn/emmet-vim'
 " requires ack or ag)
 Plug 'mileszs/ack.vim'
 
-" A plugin for Godot engine's syntax. It ain't fancy but it's good enough.
-Plug 'a-watson/vim-gdscript'
 "" Writing plugins
 " A plugin for distraction-free writing.
 Plug 'junegunn/goyo.vim'
-" A wiki-ing plugin to make note taking easier
+" A plugin for wiki-ing
 Plug 'vimwiki/vimwiki'
-
-" A minimap sublime-style. It's kinda silly, but I like it.
-Plug 'severin-lemaignan/vim-minimap'
 
 " easymotion. type spc-spc-w and see what happens.
 Plug 'easymotion/vim-easymotion'
 
 " Theeeeemes
 Plug 'flazz/vim-colorschemes'
+
+" YMMV plugins
+"Plug 'neoclide/coc.nvim', { 'tag': '*', 'do': './install.sh' }
 " }}}
 
 " MORE PREAMBLE {{{
@@ -200,7 +139,7 @@ if !s:plug_installed
 	execute "PlugInstall"
 endif
 
-filetype plugin indent on    " required
+filetype plugin indent on " required for magic to happen
 " }}}
 
 " COLOR SCHEME {{{
@@ -211,7 +150,7 @@ syntax on
 set t_Co=256 " because what the fuck terminal doesn't have 256 colors these
 " days? It's not like I'm using a VT-100 or something
 " This is where the actual theme is picked. I change this frequently.
-colorscheme Tomorrow-Night-Eighties
+colorscheme jay
 set background=dark
 " }}}
 
@@ -257,8 +196,10 @@ nnoremap k gk
 nnoremap Y y$
 
 " Make jk act like <ESC> when in insert mode-easier than reaching up for the
-" escape key.
+" escape key and the only way to roll on these new hard mode macbooks
 inoremap jk <esc>
+
+tnoremap <Esc> <C-\><C-n>
 " }}}
 
 " Disabling annoying features {{{
@@ -275,7 +216,7 @@ set guioptions=
 " Enabling neat features {{{
 " ColorColumn is one of my favorite little features-light up a given column so
 " that we know how long our lines are!
-set colorcolumn=80
+set colorcolumn=80,120
 " Cursorline-see where your cursor is
 set cursorline
 " I really like line numbers. Sue me.
@@ -342,19 +283,23 @@ au BufNewFile,BufRead *.js,*.vue
 au BufNewFile,BufRead *.yml,*.yaml
 			\ setlocal tabstop=2 softtabstop=2 shiftwidth=2 fdm=indent
 
+" Google code format for Java requires 2-width tab indents. Ugh.
+" Might as well apply for java, kotlin, groovy, and gradle scripts
+au BufNewFile,BufRead *.java,*.kt,*.groovy,*.gradle
+      \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 textwidth=120
+      \ expandtab autoindent fileformat=unix
+
+
+" disable line numbers in terminal
+au TermOpen *
+      \ set nonumber
 
 " Add auto save/reload pos in case your Vim doesn't already have support enabled
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
-" This is similar to the Python formatting, but I tend to like Groovy code
-" with 2 space tabs for some reason.
-au BufNewFile,BufRead *.groovy
-			\ setlocal tabstop=2 softtabstop=2 shiftwidth=2
-			\ expandtab autoindent fileformat=unix
-
-" Fix word wrap in vimwiki
+" Fix word wrap in vimwiki (a little wider than normal code)
 au BufNewFile,BufRead *.wiki
-			\ set tw=9999999 wrap linebreak nolist
+			\ set tw=100 wrap linebreak nolist
 
 " Fix Vim's AWFUL syntax highlighting performance for ruby files
 augroup ft_rb
@@ -364,7 +309,14 @@ augroup END
 
 au BufNewFile,BufRead Vagrantfile
 			\ setlocal re=1
+
+" some basic indentation rules for everything else. I prefer four spaces, but
+" 2 is what we  use at work.
+au BufNewFile,BufRead *
+	\ setlocal tabstop=2 softtabstop=2 shiftwidth=2 textwidth=120
+	\ expandtab autoindent
 " }}}
+
 
 " Leader bindings {{{
 " The leader key is a special key we define that can then be used to make lots
@@ -401,10 +353,6 @@ nmap <leader>tn :tabn<CR>
 " Search binding: <spc>ag (isn't that cute)
 nmap <leader>ag :Ack 
 
-" Disabling syntastic with <spc>ss in situations where it's unacceptably slow
-" or useless
-nmap <leader>ss :SyntasticToggleMode<cr>
-
 " Map <spc>e to the emmet functionality
 nmap <leader>e <C-y>,
 
@@ -418,9 +366,6 @@ nmap <leader>fF :CtrlP<CR>
 
 " Adding a mapping for my custom :Insertdate function
 nmap <leader>id :Insertdate<CR>I<BS> <ESC>$
-
-" minimap shortcut
-nmap <leader>mm :MinimapToggle<CR>
 
 " Distraction free writing.
 nmap <leader>df :Goyo<CR>
@@ -440,20 +385,20 @@ command! Wq :wq
 command! WQ :wq
 
 " Nice light mode for if you're working outside or something
-function Light()
+function! Light()
 	set bg=light
 	colorscheme morning
 endfunction
 command! Light :call Light()
 
 " Dark mode to switch back
-function Dark()
+function! Dark()
 	set bg=dark
 	colorscheme jay
 endfunction
 command! Dark :call Dark()
 
-" For inserting dates into files. useful for notes esp.
+" For inserting dates into files. useful for notes especially
 command! Insertdate :r !date
 
 " }}}
@@ -464,64 +409,6 @@ command! Insertdate :r !date
 " that (disclaimer) work on MY MACHINE AND MY MACHINE ONLY.
 "
 " Basically, here be dragons.
-
-if has('nvim')
-	" Deoplete {{{
-	let g:deoplete#enable_at_startup = 1
-	set completeopt+=noinsert
-	let g:deoplete#sources#go#auto_goos = 1
-	let g:deoplete#sources#go#pointer = 1
-	let g:deoplete#sources#go#gocode_binary = $GOPATH."/bin/gocode"
-
-	" related, but not directly Deoplete
-	autocmd FileType java setlocal omnifunc=javacomplete#Complete
-	" }}}
-else
-	" YouCompleteMe {{{
-	" Mac OS X ships with a hilariously out of date python. Let's override it with
-	" the current one being used (i.e. python 3 or whatever is installed in your
-	" venv)
-	let g:ycm_python_binary_path='python'
-	let g:ycm_server_python_interpreter='python3'
-	"" Fix for constantly being asked about using C completion. UNSAFE AND
-	"" INSECURE. YOU SHOULDN'T DO THIS UNLESS YOU DON'T CARE ABOUT SECURITY.
-	"" Related: run :YcmGenerateConfig in a C project to auto-generate C completion
-	"" tool for YouCompleteMe
-	let g:ycm_confirm_extra_conf=0
-	"" Rust settings. VERY machine specific, THIS WILL BREAK YOUR VIM IF YOU DON'T
-	"" CHANGE IT.
-	let g:ycm_rust_src_path='~/.cargo/sources/rust-1.13.0/src'
-	"" Fix Ruby completion
-	let g:ycm_seed_identifiers_with_syntax=1
-	" }}}
-endif
-
-" Syntastic {{{
-" Fix the behavior of warning me about every single fucking issue, and save
-" error messages for only actual errors.
-let g:syntastic_quiet_messages = { "level" : "warnings" }
-
-" These are the recommended settings in Syntastic. I might update them with
-" more stuff later.
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-
-" Checker definitions: need to define which checkers we want to use for each
-" language. YOU HAVE TO INSTALL THESE, THAT'S NOT MY PROBLEM.
-let g:syntastic_go_checkers = ['go']
-let g:syntastic_python_checkers = ['python', 'pylint']
-let g:syntastic_ruby_checkers = ['rubocop']
-let g:syntastic_javascript_checkers = ['standard']
-
-" Fix Django bullshit with Syntastic
-let g:syntastic_python_pylint_args = "--load-plugins pylint_django"
-" }}}
 
 " ack.vim {{{
 " Use ag if you have it. It's way faster than ack, you should get it.
@@ -539,16 +426,40 @@ let g:easytags_async = 1
 " python-mode {{{
 " Fix to use Python 3 by default. Usually a good thing to do.
 let g:pymode_python='python3'
-" Disable autocompletion; ycm does it better.
-let g:pymode_rope_completion = 0
 " }}}
 
 " vimwiki {{{
 let g:vimwiki_list = [{'path': '~/wiki'}, {'path': './wiki'}]
 " }}}
 
+" CTAGS stuff {{{
+set tags=$HOME/tags
+" }}}
+
+" Javacomplete-2 {{{
+autocmd FileType java setlocal omnifunc=javacomplete#Complete
+let g:JavaComplete_ClasspathGenerationOrder = ['Gradle']
+" }}}
+
+" ctrlp {{{
+" this is dangerous on small/low-memory/weak machines, but I deal with 20,000 file projects.
+" Deal with it I guess -\_(:/)_/-
+let g:ctrlp_max_files=0
+" }}}
+
 " ESOTERIC NONSENSE {{{
 " Most of the stuff below is stuff I got from random places on the internet. It
 " will likely change very frequently since it's mostly just silliness.
 
+" Some window resizey magic
+set winheight=30
+set winwidth=30
+silent! set winminheight=5
+set winminwidth=20
+" In normal mode, resize windows with leader-+ and leader-=
+nnoremap <silent> <leader>= :exe "resize " . (winheight(0) * 3/2)<CR>
+nnoremap <silent> <leader>- :exe "resize " . (winheight(0) * 2/3)<CR>
+" In normal mode, resize windows vertically with _ and + (shifted versions of above shortcuts)
+nnoremap <silent> <leader>+ :exe "vertical resize " . (winwidth(0) * 3/2)<CR>
+nnoremap <silent> <leader>_ :exe "vertical resize " . (winwidth(0) * 2/3)<CR>
 " }}}

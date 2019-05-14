@@ -13,10 +13,10 @@
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
 # omzsh theme
-ZSH_THEME="mh"
+ZSH_THEME="ys"
 
 # The most basic set of plugins possible. I don't need a lot :)
-plugins=(git docker virtualenv tmuxinator)
+plugins=(git docker virtualenv zsh-autosuggestions zsh-syntax-highlighting)
 
 # Disable auto-titling in omzsh
 DISABLE_AUTO_TITLE="true"
@@ -104,10 +104,10 @@ fi
 # }}}
 
 # Some extra custom functions {{{
-alias servedir='python -mSimpleHTTPServer 8080'
+alias servedir='python2 -mSimpleHTTPServer 8080'
 alias c='clear'
 
-# vim -> nvim remap if available
+## vim -> nvim remap if available
 if command_exists nvim; then
 	alias vim='nvim'
 fi
@@ -116,4 +116,36 @@ fi
 if command_exists tmuxinator; then
 	alias mux='tmuxinator'
 fi
+
+# Function for enabling small prompt (i.e. left prompt is just >>)
+alias smallprompt='export PS1=">> "'
 # }}}
+
+# ssh-agent shenanigans {{{
+#
+# note that this works (sort of) on either macos or linux, but on macos the OS
+# provides ssh-agent by default. This is cool, but also means that the first
+# half of this code (checking if ssh-agent is running) is useless. It won't 
+# break anything though.
+# Ensure agent is running
+ssh-add -l &>/dev/null
+if [ "$?" = 2 ]; then
+    # Could not open a connection to your authentication agent.
+
+    # Load stored agent connection info.
+    test -r ~/.ssh-agent && \
+        eval "$(<~/.ssh-agent)" >/dev/null
+
+    ssh-add -l &>/dev/null
+    if [ "$?" = 2 ]; then
+        # Start agent and store agent connection info.
+        (umask 066; ssh-agent > ~/.ssh-agent)
+        eval "$(<~/.ssh-agent)" >/dev/null
+    fi
+fi
+# }}}
+
+# Ctags update commands
+alias update-ctags="/usr/local/bin/ctags --exclude=\*.md --exclude=node_modules --exclude=third_party -R ~/src"
+alias update-cscope="cd ~ && find ~/src -name \"*.java\" > cscope.files; cd ~ && cscope -b -q -k"
+alias update-search="update-ctags; update-cscope"
