@@ -16,7 +16,7 @@ export ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="ys"
 
 # The most basic set of plugins possible. I don't need a lot :)
-plugins=(git docker virtualenv zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(git docker virtualenv zsh-autosuggestions zsh-syntax-highlighting vi-mode)
 
 # Disable auto-titling in omzsh
 DISABLE_AUTO_TITLE="true"
@@ -33,7 +33,7 @@ command_exists() {
 
 # Setting up some environmental stuff {{{
 # Vim is love, vim is life
-export EDITOR='/usr/local/bin/vim'
+export EDITOR=`which nvim`
 
 # Go {{{
 # Only configure if go exists in path
@@ -54,47 +54,14 @@ fi
 # }}}
 # }}}
 
-# Custom macros {{{
-# Note taking {{{
-#
-# Summary: run `note <title>` to make a new note
-#          run `notes` to get a fuzzy finder (if available) to view all notes
-function note() {
-	NOTE_DIR=~/Dropbox/notes
-	mkdir -p $NOTE_DIR || true
-	NOTE_NAME="$1"
-	if [[ -z $NOTE_NAME ]]; then
-		NOTE_NAME="$(date +%Y-%m-%d)"
-	else
-		NOTE_NAME="$(date +%Y-%m-%d)-$NOTE_NAME"
-	fi
-	vim $NOTE_DIR/$NOTE_NAME.txt
-}
-
-function notes() {
-	NOTE_DIR=~/Dropbox/notes
-	mkdir -p $NOTE_DIR || true
-	pushd $NOTE_DIR > /dev/null
-	# Use the fuzzy finder if available
-	if command_exists fzf; then
-		# Only open the selection if one was actually chosen
-		NOTEFILE=$(find * -type f -maxdepth 0 | fzf)
-		if [[ -n $NOTEFILE ]]; then
-			vim $NOTEFILE
-		fi
-	else
-		vim .
-	fi
-	popd > /dev/null
-}
-# }}}
-# }}}
-
 # Extra path manipulation {{{
 # Add /usr/local/bin to the path
 export PATH=/usr/local/bin:$PATH
 # Add $HOME/bin to the path
 export PATH=$HOME/bin:$PATH
+
+# add dotfiles bin to the path
+export PATH=$HOME/src/dotfiles/bin:$PATH
 # }}}
 
 # Source a local .zshrc if available, for machine-specific stuff {{{
@@ -145,7 +112,3 @@ if [ "$?" = 2 ]; then
 fi
 # }}}
 
-# Ctags update commands
-alias update-ctags="/usr/local/bin/ctags --exclude=\*.md --exclude=node_modules --exclude=third_party -R ~/src"
-alias update-cscope="cd ~ && find ~/src -name \"*.java\" > cscope.files; cd ~ && cscope -b -q -k"
-alias update-search="update-ctags; update-cscope"

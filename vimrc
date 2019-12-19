@@ -55,7 +55,7 @@ endif
 " }}}
 
 " PREAMBLE {{{
-set nocompatible              " be iMproved, required by Vundle
+set nocompatible              " be iMproved, required by Plug
 filetype off                  " required by Vundle
 set shell=/bin/zsh            " Replace with your favorite BASH-COMPATIBLE sh
 set t_ut=                     " Fix background color issues in Tmux
@@ -126,8 +126,18 @@ Plug 'easymotion/vim-easymotion'
 " Theeeeemes
 Plug 'flazz/vim-colorschemes'
 
-" YMMV plugins
-"Plug 'neoclide/coc.nvim', { 'tag': '*', 'do': './install.sh' }
+" Java autocompletion. Will probably add more autocompletion features later,
+" but I mostly code in java right now so whatever.
+Plug 'artur-shaik/vim-javacomplete2'
+
+" Gradle support (i.e. for Java)
+Plug 'tfnico/vim-gradle'
+
+" nice autocompletion extras
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'ervandew/supertab'
+Plug 'Shougo/unite.vim'
+Plug 'devjoe/vim-codequery'
 " }}}
 
 " MORE PREAMBLE {{{
@@ -199,7 +209,9 @@ nnoremap Y y$
 " escape key and the only way to roll on these new hard mode macbooks
 inoremap jk <esc>
 
-tnoremap <Esc> <C-\><C-n>
+if has('nvim')
+  tnoremap <Esc> <C-\><C-n>
+end
 " }}}
 
 " Disabling annoying features {{{
@@ -290,16 +302,18 @@ au BufNewFile,BufRead *.java,*.kt,*.groovy,*.gradle
       \ expandtab autoindent fileformat=unix
 
 
-" disable line numbers in terminal
-au TermOpen *
-      \ set nonumber
+if has('nvim')
+  " disable line numbers in terminal
+  au TermOpen *
+        \ set nonumber
+end
 
 " Add auto save/reload pos in case your Vim doesn't already have support enabled
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
-" Fix word wrap in vimwiki (a little wider than normal code)
+" Fix word wrap in vimwiki 
 au BufNewFile,BufRead *.wiki
-			\ set tw=100 wrap linebreak nolist
+			\ set tw=80 wrap linebreak nolist
 
 " Fix Vim's AWFUL syntax highlighting performance for ruby files
 augroup ft_rb
@@ -313,10 +327,9 @@ au BufNewFile,BufRead Vagrantfile
 " some basic indentation rules for everything else. I prefer four spaces, but
 " 2 is what we  use at work.
 au BufNewFile,BufRead *
-	\ setlocal tabstop=2 softtabstop=2 shiftwidth=2 textwidth=120
+	\ setlocal tabstop=2 softtabstop=2 shiftwidth=2 textwidth=80
 	\ expandtab autoindent
 " }}}
-
 
 " Leader bindings {{{
 " The leader key is a special key we define that can then be used to make lots
@@ -373,6 +386,10 @@ nmap <leader>df :Goyo<CR>
 " Note the colorscheme hack. It fixes the coloring issues, but not elegantly.
 " May try to make that better later
 nmap <leader>dc :Goyo!<CR>:colorscheme jay<CR>
+
+" codequery
+nmap <leader>cm :CodeQueryMenu Unite<CR>
+nmap <leader>cc :CodeQuery<CR>
 " }}}
 
 " Custom functions {{{
@@ -436,9 +453,9 @@ let g:vimwiki_list = [{'path': '~/wiki'}, {'path': './wiki'}]
 set tags=$HOME/tags
 " }}}
 
-" Javacomplete-2 {{{
+" Java Bollocks {{{
 autocmd FileType java setlocal omnifunc=javacomplete#Complete
-let g:JavaComplete_ClasspathGenerationOrder = ['Gradle']
+let g:deoplete#enable_at_startup = 1
 " }}}
 
 " ctrlp {{{
