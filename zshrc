@@ -16,7 +16,7 @@ export ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="ys"
 
 # The most basic set of plugins possible. I don't need a lot :)
-plugins=(git docker virtualenv zsh-autosuggestions zsh-syntax-highlighting vi-mode)
+plugins=(git docker virtualenv zsh-autosuggestions zsh-syntax-highlighting vi-mode kubectl)
 
 # Disable auto-titling in omzsh
 DISABLE_AUTO_TITLE="true"
@@ -77,6 +77,29 @@ alias c='clear'
 ## vim -> nvim remap if available
 if command_exists nvim; then
 	alias vim='nvim'
+fi
+
+## Set up vimwiki usage
+alias vw="cd ~/wiki/ && vim +VimwikiIndex && updatewiki"
+alias diary="cd ~/wiki/ && vim +VimwikiMakeDiaryNote && updatewiki"
+alias updatewiki="vim +VimwikiDiaryIndex +VimwikiDiaryGenerateLinks +wall +VimwikiRebuildTags +VimwikiAll2HTML +qall"
+
+if command_exists fzf; then
+  # find-in-file
+  alias fif="ag --nobreak --noheading . | fzf"
+  # vim fuzzy-find
+  vfzf() {
+    vim $(fzf)
+  }
+  # find-in-file, then edit file in vim
+  vfif() {
+    found=$(fif)
+    if [ $? -eq 0 ]; then # we found something!
+      filename=$(echo $found | cut -f1 -d':')
+      line=$(echo $found | cut -f2 -d':')
+      vim +$line $filename
+    fi
+  }
 fi
 
 # support tmuxinator

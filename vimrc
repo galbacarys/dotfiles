@@ -96,9 +96,8 @@ Plug 'airblade/vim-gitgutter'
 " lets you visualize it.
 Plug 'mbbill/undotree'
 
-" Repeatedly pressing `v' causes the region you're highlighting to
-" expand. Just try it.
-Plug 'terryma/vim-expand-region'
+" Tagbar; useful for wiki navigation
+Plug 'majutsushi/tagbar'
 
 " CtrlP is a fuzzy finder. Type to narrow down what you want to find and hit
 " enter when you find it.
@@ -119,6 +118,8 @@ Plug 'mileszs/ack.vim'
 Plug 'junegunn/goyo.vim'
 " A plugin for wiki-ing
 Plug 'vimwiki/vimwiki'
+" A plugin for drawing fun boxen
+Plug 'gyim/vim-boxdraw'
 
 " easymotion. type spc-spc-w and see what happens.
 Plug 'easymotion/vim-easymotion'
@@ -135,9 +136,12 @@ Plug 'tfnico/vim-gradle'
 
 " nice autocompletion extras
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'ervandew/supertab'
 Plug 'Shougo/unite.vim'
-Plug 'devjoe/vim-codequery'
+
+"Snippets!
+Plug 'SirVer/ultisnips'
 " }}}
 
 " MORE PREAMBLE {{{
@@ -166,10 +170,10 @@ set background=dark
 
 " EDITOR OPTIONS {{{
 " Tab stuff {{{
-" Because 4-space tabs are god
-set tabstop=4
-set softtabstop=4
-set shiftwidth=4
+" Because 2-space tabs are god
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
 " And use real tabs, not that namby-pamby expandtab bullshit
 set noexpandtab
 " }}}
@@ -186,6 +190,7 @@ let g:airline_right_sep=''
 " Make Airline do some neat detection stuff
 let g:airline_detect_modified=1
 let g:airline_detect_paste=1
+set relativenumber
 " }}}
 
 " Splits {{{
@@ -301,6 +306,9 @@ au BufNewFile,BufRead *.java,*.kt,*.groovy,*.gradle
       \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 textwidth=120
       \ expandtab autoindent fileformat=unix
 
+" Fix Makefiles since you have to not expand tabs...
+au FileType make
+      \ setlocal noexpandtab softtabstop=0 shiftwidth=8
 
 if has('nvim')
   " disable line numbers in terminal
@@ -378,7 +386,7 @@ nmap <leader>ff :CtrlPCurWD<CR>
 nmap <leader>fF :CtrlP<CR>
 
 " Adding a mapping for my custom :Insertdate function
-nmap <leader>id :Insertdate<CR>I<BS> <ESC>$
+nmap <leader>id :Insertdate<CR>I<BS> <ESC>$0x$
 
 " Distraction free writing.
 nmap <leader>df :Goyo<CR>
@@ -400,6 +408,10 @@ command! -range -nargs=0 -bar JsonTool <line1>,<line2>!python -m json.tool
 command! Q :q
 command! Wq :wq
 command! WQ :wq
+
+" Box mode!
+command! Boxon :set virtualedit+=all
+command! Boxoff :set virtualedit-=all
 
 " Nice light mode for if you're working outside or something
 function! Light()
@@ -463,7 +475,17 @@ let g:deoplete#enable_at_startup = 1
 " Deal with it I guess -\_(:/)_/-
 let g:ctrlp_max_files=0
 " }}}
-
+" tagbar {{{
+let g:tagbar_type_vimwiki = {
+          \   'ctagstype':'vimwiki'
+          \ , 'kinds':['h:header']
+          \ , 'sro':'&&&'
+          \ , 'kind2scope':{'h':'header'}
+          \ , 'sort':0
+          \ , 'ctagsbin':'~/src/dotfiles/bin/vwtags.py'
+          \ , 'ctagsargs': 'default'
+          \ }
+" }}}
 " ESOTERIC NONSENSE {{{
 " Most of the stuff below is stuff I got from random places on the internet. It
 " will likely change very frequently since it's mostly just silliness.
