@@ -89,7 +89,7 @@ if command_exists fzf; then
   alias fif="ag --nobreak --noheading . | fzf"
   # vim fuzzy-find
   vfzf() {
-    vim $(fzf)
+    vim "$(fzf)"
   }
   # find-in-file, then edit file in vim
   vfif() {
@@ -97,7 +97,7 @@ if command_exists fzf; then
     if [ $? -eq 0 ]; then # we found something!
       filename=$(echo $found | cut -f1 -d':')
       line=$(echo $found | cut -f2 -d':')
-      vim +$line $filename
+      vim +$line "$filename"
     fi
   }
 fi

@@ -398,6 +398,18 @@ nmap <leader>dc :Goyo!<CR>:colorscheme jay<CR>
 " codequery
 nmap <leader>cm :CodeQueryMenu Unite<CR>
 nmap <leader>cc :CodeQuery<CR>
+
+" Go debugging
+nmap <leader>gtt :GoTest<CR>
+nmap <leader>gb :GoBuild<CR>
+nmap <leader>gdb :GoDebugBreakpoint<CR>
+nmap <leader>gds :GoDebugStart<CR>
+nmap <leader>gdt :GoDebugTest<CR>
+
+nmap <leader>gs :GoDebugStep<CR>
+nmap <leader>gS :GoDebugStepOut<CR>
+nmap <leader>gn :GoDebugNext<CR>
+nmap <leader>gc :GoDebugContinue<CR>
 " }}}
 
 " Custom functions {{{
@@ -501,4 +513,8 @@ nnoremap <silent> <leader>- :exe "resize " . (winheight(0) * 2/3)<CR>
 " In normal mode, resize windows vertically with _ and + (shifted versions of above shortcuts)
 nnoremap <silent> <leader>+ :exe "vertical resize " . (winwidth(0) * 3/2)<CR>
 nnoremap <silent> <leader>_ :exe "vertical resize " . (winwidth(0) * 2/3)<CR>
+
+" some autocomplete customizations
+set completeopt=longest,menuone
+inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "<C-g>u\<CR>"
 " }}}
