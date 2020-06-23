@@ -37,6 +37,11 @@ ys_hg_prompt_info() {
 
 local exit_code="%(?,,C:%{$fg[red]%}%?%{$reset_color%})"
 
+local hcloud_info='$(ys_hcloud_prompt_info)'
+ys_hcloud_prompt_info() {
+  echo -n "$HEROKU_CLOUD"
+}
+
 # Prompt format:
 #
 # PRIVILEGES USER @ MACHINE in DIRECTORY on git:BRANCH STATE [TIME] C:LAST_EXIT_CODE
@@ -56,6 +61,6 @@ PROMPT="
 ${hg_info}\
 ${git_info}\
  \
-%{$fg[white]%}[%*] $exit_code \
-%{%fg[white]%}[%*] $HEROKU_CLOUD
+%{$fg[white]%}[%*] $exit_code\
+%{$terminfo[bold]$fg[grey]%}[h:${hcloud_info}]
 %{$terminfo[bold]$fg[red]%}$ %{$reset_color%}"

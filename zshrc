@@ -13,7 +13,7 @@
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
 # omzsh theme
-ZSH_THEME="ys"
+ZSH_THEME="patched-ys"
 
 # The most basic set of plugins possible. I don't need a lot :)
 plugins=(git docker virtualenv zsh-autosuggestions zsh-syntax-highlighting vi-mode kubectl)
