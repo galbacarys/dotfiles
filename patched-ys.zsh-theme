@@ -61,6 +61,6 @@ PROMPT="
 ${hg_info}\
 ${git_info}\
  \
-%{$fg[white]%}[%*] $exit_code\
-%{$terminfo[bold]$fg[grey]%}[h:${hcloud_info}]
+%{$fg[white]%}[%*]$exit_code\
+%{$terminfo[bold]$fg[grey]%} [h:${hcloud_info}]
 %{$terminfo[bold]$fg[red]%}$ %{$reset_color%}"

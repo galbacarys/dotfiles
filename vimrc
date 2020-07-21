@@ -127,6 +127,9 @@ Plug 'easymotion/vim-easymotion'
 " Theeeeemes
 Plug 'flazz/vim-colorschemes'
 
+" A neat startpage
+Plug 'mhinz/vim-startify'
+
 " Java autocompletion. Will probably add more autocompletion features later,
 " but I mostly code in java right now so whatever.
 Plug 'artur-shaik/vim-javacomplete2'
@@ -139,7 +142,7 @@ Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'ervandew/supertab'
 Plug 'Shougo/unite.vim'
-
+Plug 'dense-analysis/ale'
 "Snippets!
 Plug 'SirVer/ultisnips'
 " }}}
@@ -310,6 +313,33 @@ au BufNewFile,BufRead *.java,*.kt,*.groovy,*.gradle
 au FileType make
       \ setlocal noexpandtab softtabstop=0 shiftwidth=8
 
+" Some golang specific options and autocmd
+let g:go_highlight_build_constraints = 1
+let g:go_highlight_extra_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_types = 1
+let g:go_auto_sameids = 1
+let g:go_auto_type_info = 1
+let g:go_fmt_command = "goimports"
+let g:go_addtags_transform = "snakecase"
+
+" ale-specific stuff
+let g:ale_sign_error = '!!'
+let g:ale_sign_warning = '!'
+let g:airline#extensions#ale#enabled = 1
+
+augroup ft_go
+  au!
+  au FileType go nnore <buffer> K :ALEHover<CR>
+augroup END
+
+
+" Other stuff
+
 if has('nvim')
   " disable line numbers in terminal
   au TermOpen *
@@ -399,19 +429,6 @@ nmap <leader>dc :Goyo!<CR>:colorscheme jay<CR>
 nmap <leader>cm :CodeQueryMenu Unite<CR>
 nmap <leader>cc :CodeQuery<CR>
 
-" Go debugging
-nmap <leader>gtt :GoTest<CR>
-nmap <leader>gb :GoBuild<CR>
-nmap <leader>gdb :GoDebugBreakpoint<CR>
-nmap <leader>gds :GoDebugStart<CR>
-nmap <leader>gdt :GoDebugTest<CR>
-
-nmap <leader>gs :GoDebugStep<CR>
-nmap <leader>gS :GoDebugStepOut<CR>
-nmap <leader>gn :GoDebugNext<CR>
-nmap <leader>gc :GoDebugContinue<CR>
-" }}}
-
 " Custom functions {{{
 " Some stuff I've whipped up or stolen from around teh internetz to make my
 " life a little easier
@@ -481,6 +498,11 @@ set tags=$HOME/tags
 autocmd FileType java setlocal omnifunc=javacomplete#Complete
 let g:deoplete#enable_at_startup = 1
 " }}}
+" Go ALE stuff
+let g:ale_linters = {
+      \  'go': ['gopls']
+      \ }
+let g:ale_completion_enabled = 1
 
 " ctrlp {{{
 " this is dangerous on small/low-memory/weak machines, but I deal with 20,000 file projects.
