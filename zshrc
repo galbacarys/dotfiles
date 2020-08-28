@@ -80,8 +80,8 @@ if command_exists nvim; then
 fi
 
 ## Set up vimwiki usage
-alias vw="cd ~/wiki/ && vim +VimwikiIndex && updatewiki"
-alias diary="cd ~/wiki/ && vim +VimwikiMakeDiaryNote && updatewiki"
+alias vw="cd ~/wiki/ && vim --cmd 'let g:startify_disable_at_vimenter = 1' +VimwikiIndex && updatewiki"
+alias diary="cd ~/wiki/ && vim --cmd 'let g:startify_disable_at_vimenter = 1' +VimwikiMakeDiaryNote && updatewiki"
 alias updatewiki="vim +VimwikiDiaryIndex +VimwikiDiaryGenerateLinks +wall +VimwikiRebuildTags +VimwikiAll2HTML +qall"
 
 if command_exists fzf; then

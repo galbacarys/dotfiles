@@ -143,6 +143,9 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'ervandew/supertab'
 Plug 'Shougo/unite.vim'
 Plug 'dense-analysis/ale'
+" Terraform nonsense
+Plug 'hashivim/vim-terraform'
+Plug 'juliosueiras/vim-terraform-completion'
 "Snippets!
 Plug 'SirVer/ultisnips'
 " }}}
@@ -496,13 +499,22 @@ set tags=$HOME/tags
 
 " Java Bollocks {{{
 autocmd FileType java setlocal omnifunc=javacomplete#Complete
-let g:deoplete#enable_at_startup = 1
 " }}}
 " Go ALE stuff
 let g:ale_linters = {
       \  'go': ['gopls']
       \ }
 let g:ale_completion_enabled = 1
+
+" Terraform configs
+let g:terraform_completion_keys = 1
+
+call deoplete#custom#option('omni_patterns', {
+  \ 'complete_method': 'omnifunc',
+  \ 'terraform': '[^ *\t"{=$]\w*',
+  \})
+
+call deoplete#initialize()
 
 " ctrlp {{{
 " this is dangerous on small/low-memory/weak machines, but I deal with 20,000 file projects.
