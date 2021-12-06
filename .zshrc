@@ -5,7 +5,7 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="lambda"
+ZSH_THEME="af-magic"
 
 # Uncomment one of the following lines to change the auto-update behavior
 zstyle ':omz:update' mode reminder  # just remind me to update when it's time
@@ -22,7 +22,7 @@ COMPLETION_WAITING_DOTS="true"
 DISABLE_UNTRACKED_FILES_DIRTY="true"
 
 # Which plugins would you like to load?
-plugins=(git vi-mode zsh-syntax-highlighting zsh-autosuggestions)
+plugins=(git vi-mode zsh-syntax-highlighting zsh-autosuggestions aws command-not-found virtualenv)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -106,6 +106,11 @@ fi
 # support tmuxinator
 if command_exists tmuxinator; then
 	alias mux='tmuxinator'
+fi
+
+# nvim if available
+if command_exists nvim; then
+	alias vim='nvim'
 fi
 
 # Function for enabling small prompt (i.e. left prompt is just >>)
