@@ -41,6 +41,17 @@ command_exists() {
 # Vim is love, vim is life
 export EDITOR=`which nvim`
 
+# fix tmux starting incorrectly possibly
+if command_exists tmux; then
+	alias tmux='tmux -2'
+fi
+
+# nvim if available
+if command_exists nvim; then
+	alias vim='nvim'
+fi
+
+
 # Go {{{
 # Only configure if go exists in path
 if command_exists go; then
@@ -101,16 +112,6 @@ if command_exists fzf; then
       vim +$line "$filename"
     fi
   }
-fi
-
-# support tmuxinator
-if command_exists tmuxinator; then
-	alias mux='tmuxinator'
-fi
-
-# nvim if available
-if command_exists nvim; then
-	alias vim='nvim'
 fi
 
 # Function for enabling small prompt (i.e. left prompt is just >>)

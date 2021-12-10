@@ -129,7 +129,7 @@ set modelines=5
 "
 
 " navigation {{{
-set relativenumber
+set number relativenumber
 
 " visual navigation
 nnore j gj
@@ -160,8 +160,8 @@ nmap <leader>bd :bd<CR>
 nmap <leader>bb :CtrlPBuffer<CR>
 
 " Tab management (same as buffers more or less)
-nmap <leader>tn :tn<CR>
-nmap <leader>tp :tp<CR>
+nmap <leader>tn :tabnext<CR>
+nmap <leader>tp :tabprevious<CR>
 
 " Foldlevel manipulation
 nmap <leader>zz :set foldlevel=0<CR>
@@ -207,6 +207,10 @@ let g:airline_right_sep=''
 let g:airline_detect_modified=1
 let g:airline_detect_paste=1
 " }}} /airline
+
+" Vimwiki {{{
+let g:vimwiki_list = [{'path': '~/wiki/', 'auto_diary_index': 1 }]
+" }}}
 
 " ack.vim {{{
 if executable('ag')
