@@ -67,6 +67,8 @@ Plug 'Shougo/unite.vim'
 Plug 'hashivim/vim-terraform'
 
 Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+Plug 'prabirshrestha/asyncomplete-ultisnips.vim'
 "}}}
 
 " More preamble {{{
@@ -220,6 +222,18 @@ endif
 
 " Python stuff {{{
 let g:pymode_python='python3'
+" }}}
+
+" Snippets {{{
+let g:UltiSnipsJumpForwardTrigger="<C-n>"
+let g:UltiSnipsJumpBackwardTrigger="<C-p>"
+
+let g:UltiSnipsExpandTrigger="<c-x>"
+call asyncomplete#register_source(asyncomplete#sources#ultisnips#get_source_options({
+			\ 'name': 'ultisnips',
+			\ 'allowlist': ['*'],
+			\ 'completor': function('asyncomplete#sources#ultisnips#completor'),
+			\ }))
 " }}}
 
 " }}} /plugins
