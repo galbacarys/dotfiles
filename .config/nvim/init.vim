@@ -64,6 +64,10 @@ Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'ervandew/supertab'
 Plug 'Shougo/unite.vim'
 
+" Language specific
+Plug 'pangloss/vim-javascript'
+Plug 'leafgarland/typescript-vim'
+
 Plug 'hashivim/vim-terraform'
 
 Plug 'SirVer/ultisnips'
@@ -211,7 +215,7 @@ let g:airline_detect_paste=1
 " }}} /airline
 
 " Vimwiki {{{
-let g:vimwiki_list = [{'path': '~/wiki/', 'auto_diary_index': 1 }]
+let g:vimwiki_list = [{'path': '~/wiki/', 'auto_diary_index': 1, 'auto_generate_links': 1, 'auto_generate_tags': 1, 'auto_tags': 1 }]
 " }}}
 
 " ack.vim {{{
@@ -234,6 +238,15 @@ call asyncomplete#register_source(asyncomplete#sources#ultisnips#get_source_opti
 			\ 'allowlist': ['*'],
 			\ 'completor': function('asyncomplete#sources#ultisnips#completor'),
 			\ }))
+" }}}
+
+" General LSP autocomplete stuff {{{
+nnoremap <leader>gd :LspDefinition<CR>
+nnoremap <leader>gr :LspReferences<CR>
+nnoremap <leader>hh :LspHover<CR>
+nnoremap <leader>hd :LspPeekDefinition<CR>
+nnoremap <leader>rr :LspRename<CR>
+nnoremap <leader>gca :LspCodeAction<CR>
 " }}}
 
 " }}} /plugins
