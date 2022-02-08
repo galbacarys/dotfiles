@@ -1,7 +1,7 @@
 #!/bin/bash
 
 main() {
-	task_id=$(task +ACTIVE ids | cut -c1)
+	task_id=$(task +ACTIVE ids | cut -f1)
 	if [ -z $task_id ]; then
 		echo "No active tasks"
 		exit 0

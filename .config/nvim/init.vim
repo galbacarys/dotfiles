@@ -28,7 +28,7 @@ Plug 'vim-airline/vim-airline'
 
 Plug 'josuegaleas/jay'
 
-" The tim pope collection :)
+"" The tim pope collection :)
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-sensible'
@@ -38,13 +38,13 @@ Plug 'airblade/vim-gitgutter'
 
 Plug 'mbbill/undotree'
 
-Plug 'ctrlpvim/ctrlp.vim'
+" Telescope and friends
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
 
 Plug 'majutsushi/tagbar'
 
 Plug 'mattn/emmet-vim'
-
-Plug 'mileszs/ack.vim'
 
 " Vimwiki magicks
 Plug 'vimwiki/vimwiki'
@@ -163,7 +163,6 @@ nmap <leader>w <C-w>
 nmap <leader>bn :bn<CR>
 nmap <leader>bp :bp<CR>
 nmap <leader>bd :bd<CR>
-nmap <leader>bb :CtrlPBuffer<CR>
 
 " Tab management (same as buffers more or less)
 nmap <leader>tn :tabnext<CR>
@@ -176,13 +175,10 @@ nmap <leader>za :set foldlevel=9999<CR>
 " Emmet
 nmap <leader>e <C-y>,
 
-" Search
-nmap <leader>ag :Ack
-
-" File finding
-let g:ctrlp_map = ''
-nmap <leader>ff :CtrlP<CR>
-nmap <leader>fF :CtrlPCurWD<CR>
+" Telescope
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>ag <cmd>lua require('telescope.builtin').live_grep()<cr>
+nnoremap <leader>bb <cmd>lua require('telescope.builtin').buffers()<cr>
 
 " Scrolloff: prevent the cursor from moving more than 5 lines close to screen
 " boundaries
@@ -218,21 +214,28 @@ let g:airline_detect_paste=1
 let g:vimwiki_list = [{'path': '~/wiki/', 'auto_diary_index': 1, 'auto_generate_links': 1, 'auto_generate_tags': 1, 'auto_tags': 1 }]
 " }}}
 
-" ack.vim {{{
-if executable('ag')
-	let g:ackprg = 'ag --vimgrep'
-endif
-" }}}
-
 " Python stuff {{{
 let g:pymode_python='python3'
+" }}}
+
+" General LSP Config {{{
+let g:lsp_settings = {
+			\ 'pyls-all': {
+				\ 'workspace_config': {
+					\ 'pyls': {
+						\ 'configurationSources': ['flake8']
+						\ }
+					\ }
+				\ }
+			\ }
+
 " }}}
 
 " Snippets {{{
 let g:UltiSnipsJumpForwardTrigger="<C-n>"
 let g:UltiSnipsJumpBackwardTrigger="<C-p>"
 
-let g:UltiSnipsExpandTrigger="<c-x>"
+let g:UltiSnipsExpandTrigger="<c-e>"
 call asyncomplete#register_source(asyncomplete#sources#ultisnips#get_source_options({
 			\ 'name': 'ultisnips',
 			\ 'allowlist': ['*'],
@@ -247,6 +250,14 @@ nnoremap <leader>hh :LspHover<CR>
 nnoremap <leader>hd :LspPeekDefinition<CR>
 nnoremap <leader>rr :LspRename<CR>
 nnoremap <leader>gca :LspCodeAction<CR>
+"nnoremap <leader>gd <cmd>Telescope lsp_definitions<CR>
+"nnoremap <leader>gr <cmd>Telescope lsp_references<cr>
+"nnoremap <leader>hh :LspHover<CR>
+"nnoremap <leader>hd :LspPeekDefinition<CR>
+"nnoremap <leader>rr :LspRename<CR>
+"nnoremap <leader>gss <cmd>Telescope lsp_document_symbols<cr>
+"nnoremap <leader>gsa <cmd>Telescope lsp_workspace_symbols<cr>
+"nnoremap <leader>gca <cmd>Telescope lsp_code_actions<cr>
 " }}}
 
 " }}} /plugins
@@ -262,6 +273,9 @@ au BufNewFile,BufRead *.yml,*.yaml
 
 au BufNewFile,BufRead *.wiki
 			\ set tw=80 wrap linebreak nolist
+
+au FileType TelescopePrompt 
+			\ let b:asyncomplete_enable=0
 
 " fix a syntax highlighting issue in ruby
 augroup ft_rb
