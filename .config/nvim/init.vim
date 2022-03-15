@@ -67,6 +67,7 @@ Plug 'Shougo/unite.vim'
 " Language specific
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
+Plug 'google/vim-jsonnet'
 
 Plug 'hashivim/vim-terraform'
 
@@ -220,15 +221,21 @@ let g:pymode_python='python3'
 
 " General LSP Config {{{
 let g:lsp_settings = {
-			\ 'pyls-all': {
-				\ 'workspace_config': {
-					\ 'pyls': {
-						\ 'configurationSources': ['flake8']
-						\ }
-					\ }
-				\ }
-			\ }
-
+	  \   'filetype': {'python': 'pylsp-all'},
+    \   'pylsp': {
+    \     'workspace_config': {
+    \         'pylsp': {
+    \             'configurationSources': ['flake8'],
+    \             'plugins': {
+		\                'flake8': {'enabled': v:true},
+		\                'pyflakes': {'enabled': v:false},
+		\                'pycodestyle': {'enabled': v:false},
+		\                'rope': {'enabled': v:true},
+    \             },
+    \         },
+    \     },
+    \   },
+    \ }
 " }}}
 
 " Snippets {{{
@@ -249,6 +256,8 @@ nnoremap <leader>gr :LspReferences<CR>
 nnoremap <leader>hh :LspHover<CR>
 nnoremap <leader>hd :LspPeekDefinition<CR>
 nnoremap <leader>rr :LspRename<CR>
+nnoremap <leader>gss :LspDocumentSymbol<CR>
+nnoremap <leader>gsa :LspWorkspaceSymbol<CR>
 nnoremap <leader>gca :LspCodeAction<CR>
 "nnoremap <leader>gd <cmd>Telescope lsp_definitions<CR>
 "nnoremap <leader>gr <cmd>Telescope lsp_references<cr>
