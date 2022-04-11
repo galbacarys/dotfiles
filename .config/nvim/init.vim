@@ -57,12 +57,14 @@ Plug 'easymotion/vim-easymotion'
 Plug 'mhinz/vim-startify'
 
 " Autocompletion plugins
-Plug 'prabirshrestha/vim-lsp'
-Plug 'mattn/vim-lsp-settings'
-Plug 'prabirshrestha/asyncomplete.vim'
-Plug 'prabirshrestha/asyncomplete-lsp.vim'
-Plug 'ervandew/supertab'
-Plug 'Shougo/unite.vim'
+Plug 'neovim/nvim-lspconfig'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/nvim-cmp'
+
 
 " Language specific
 Plug 'pangloss/vim-javascript'
@@ -73,7 +75,8 @@ Plug 'hashivim/vim-terraform'
 
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
-Plug 'prabirshrestha/asyncomplete-ultisnips.vim'
+Plug 'quangnguyen30192/cmp-nvim-ultisnips'
+
 "}}}
 
 " More preamble {{{
@@ -220,22 +223,89 @@ let g:pymode_python='python3'
 " }}}
 
 " General LSP Config {{{
-let g:lsp_settings = {
-	  \   'filetype': {'python': 'pylsp-all'},
-    \   'pylsp': {
-    \     'workspace_config': {
-    \         'pylsp': {
-    \             'configurationSources': ['flake8'],
-    \             'plugins': {
-		\                'flake8': {'enabled': v:true},
-		\                'pyflakes': {'enabled': v:false},
-		\                'pycodestyle': {'enabled': v:false},
-		\                'rope': {'enabled': v:true},
-    \             },
-    \         },
-    \     },
-    \   },
-    \ }
+set completeopt=menu,menuone,noselect
+
+lua << EOF
+  -- Setup nvim-cmp.
+  local cmp = require'cmp'
+
+  cmp.setup({
+    snippet = {
+      -- REQUIRED - you must specify a snippet engine
+      expand = function(args)
+        vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+      end,
+    },
+    mapping = {
+      ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
+      ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
+      ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
+      ['<C-y>'] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
+      ['<C-e>'] = cmp.mapping({
+        i = cmp.mapping.abort(),
+        c = cmp.mapping.close(),
+      }),
+      ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+    },
+    sources = cmp.config.sources({
+      { name = 'nvim_lsp' },
+      { name = 'ultisnips' }, -- For ultisnips users.
+    }, {
+      { name = 'buffer' },
+    })
+  })
+
+  -- Set configuration for specific filetype.
+  cmp.setup.filetype('gitcommit', {
+    sources = cmp.config.sources({
+      { name = 'cmp_git' }, -- You can specify the `cmp_git` source if you were installed it.
+    }, {
+      { name = 'buffer' },
+    })
+  })
+
+  -- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
+  cmp.setup.cmdline('/', {
+    sources = {
+      { name = 'buffer' }
+    }
+  })
+
+  -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+  cmp.setup.cmdline(':', {
+    sources = cmp.config.sources({
+      { name = 'path' }
+    }, {
+      { name = 'cmdline' }
+    })
+  })
+
+
+local opts = { noremap=true, silent=true }
+local on_attach = function(client, bufnr)
+	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gd',  "<cmd>lua require('telescope.builtin').lsp_definitions()<CR>", opts)
+	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gr',  "<cmd>lua require('telescope.builtin').lsp_references()<CR>", opts)
+	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>hh',  "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
+	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gss', "<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>", opts)
+	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gsa', "<cmd>lua require('telescope.builtin').lsp_workspace_symbols()<CR>", opts)
+	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gca', "<cmd>lua require('telescope.builtin').lsp_code_actions()<CR>", opts)
+end
+
+local servers = { 'tsserver' }
+-- Setup lspconfig.
+local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+for _, lsp in pairs(servers) do
+	require('lspconfig')[lsp].setup {
+			on_attach = on_attach,
+			flags = {
+				debounce_text_changes = 150,
+			},
+			capabilities = capabilities,
+		}
+end
+EOF
+
+nnoremap <leader>rr :LspRename<CR>
 " }}}
 
 " Snippets {{{
@@ -243,31 +313,8 @@ let g:UltiSnipsJumpForwardTrigger="<C-n>"
 let g:UltiSnipsJumpBackwardTrigger="<C-p>"
 
 let g:UltiSnipsExpandTrigger="<c-e>"
-call asyncomplete#register_source(asyncomplete#sources#ultisnips#get_source_options({
-			\ 'name': 'ultisnips',
-			\ 'allowlist': ['*'],
-			\ 'completor': function('asyncomplete#sources#ultisnips#completor'),
-			\ }))
 " }}}
 
-" General LSP autocomplete stuff {{{
-nnoremap <leader>gd :LspDefinition<CR>
-nnoremap <leader>gr :LspReferences<CR>
-nnoremap <leader>hh :LspHover<CR>
-nnoremap <leader>hd :LspPeekDefinition<CR>
-nnoremap <leader>rr :LspRename<CR>
-nnoremap <leader>gss :LspDocumentSymbol<CR>
-nnoremap <leader>gsa :LspWorkspaceSymbol<CR>
-nnoremap <leader>gca :LspCodeAction<CR>
-"nnoremap <leader>gd <cmd>Telescope lsp_definitions<CR>
-"nnoremap <leader>gr <cmd>Telescope lsp_references<cr>
-"nnoremap <leader>hh :LspHover<CR>
-"nnoremap <leader>hd :LspPeekDefinition<CR>
-"nnoremap <leader>rr :LspRename<CR>
-"nnoremap <leader>gss <cmd>Telescope lsp_document_symbols<cr>
-"nnoremap <leader>gsa <cmd>Telescope lsp_workspace_symbols<cr>
-"nnoremap <leader>gca <cmd>Telescope lsp_code_actions<cr>
-" }}}
 
 " }}} /plugins
 
@@ -282,9 +329,6 @@ au BufNewFile,BufRead *.yml,*.yaml
 
 au BufNewFile,BufRead *.wiki
 			\ set tw=80 wrap linebreak nolist
-
-au FileType TelescopePrompt 
-			\ let b:asyncomplete_enable=0
 
 " fix a syntax highlighting issue in ruby
 augroup ft_rb
