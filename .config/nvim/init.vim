@@ -70,6 +70,7 @@ Plug 'hrsh7th/nvim-cmp'
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'google/vim-jsonnet'
+" Python REPL support!
 
 Plug 'hashivim/vim-terraform'
 
@@ -297,9 +298,10 @@ local on_attach = function(client, bufnr)
 	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gss', "<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>", opts)
 	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gsa', "<cmd>lua require('telescope.builtin').lsp_workspace_symbols()<CR>", opts)
 	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gca', "<cmd>lua require('telescope.builtin').lsp_code_actions()<CR>", opts)
+	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rr', "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
 end
 
-local servers = { 'tsserver', 'clojure_lsp' }
+local servers = { 'tsserver', 'clojure_lsp', 'pyright' }
 -- Setup lspconfig.
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 for _, lsp in pairs(servers) do
@@ -312,8 +314,6 @@ for _, lsp in pairs(servers) do
 		}
 end
 EOF
-
-nnoremap <leader>rr :LspRename<CR>
 " }}}
 
 " Snippets {{{
