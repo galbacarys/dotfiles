@@ -73,6 +73,14 @@ Plug 'google/vim-jsonnet'
 
 Plug 'hashivim/vim-terraform'
 
+" Mostly for clojure, but generally useful for highly nested stuff
+Plug 'jiangmiao/auto-pairs'
+Plug 'kien/rainbow_parentheses.vim'
+Plug 'tpope/vim-sexp-mappings-for-regular-people'
+Plug 'guns/vim-sexp'
+Plug 'tpope/vim-repeat'
+
+
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'quangnguyen30192/cmp-nvim-ultisnips'
@@ -291,7 +299,7 @@ local on_attach = function(client, bufnr)
 	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gca', "<cmd>lua require('telescope.builtin').lsp_code_actions()<CR>", opts)
 end
 
-local servers = { 'tsserver' }
+local servers = { 'tsserver', 'clojure_lsp' }
 -- Setup lspconfig.
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 for _, lsp in pairs(servers) do
