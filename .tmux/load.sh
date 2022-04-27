@@ -1,7 +1,7 @@
 #!/bin/bash
 
 macos() {
-	uptime | awk -F'load average{s}*:' '{print $2}'
+	uptime | awk -F'load averages:' '{print $2}'
 }
 
 linux () {
