@@ -297,7 +297,7 @@ local on_attach = function(client, bufnr)
 	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>hh',  "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
 	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gss', "<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>", opts)
 	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gsa', "<cmd>lua require('telescope.builtin').lsp_workspace_symbols()<CR>", opts)
-	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gca', "<cmd>lua require('telescope.builtin').lsp_code_actions()<CR>", opts)
+	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gca', "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
 	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rr', "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
 end
 
