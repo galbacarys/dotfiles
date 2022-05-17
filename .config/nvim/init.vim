@@ -46,12 +46,6 @@ Plug 'majutsushi/tagbar'
 
 Plug 'mattn/emmet-vim'
 
-" Vimwiki magicks
-Plug 'vimwiki/vimwiki'
-Plug 'tools-life/taskwiki'
-Plug 'powerman/vim-plugin-AnsiEsc'
-Plug 'farseer90718/vim-taskwarrior'
-
 Plug 'easymotion/vim-easymotion'
 
 Plug 'mhinz/vim-startify'
@@ -70,7 +64,6 @@ Plug 'hrsh7th/nvim-cmp'
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'google/vim-jsonnet'
-" Python REPL support!
 
 Plug 'hashivim/vim-terraform'
 
@@ -80,12 +73,6 @@ Plug 'kien/rainbow_parentheses.vim'
 Plug 'tpope/vim-sexp-mappings-for-regular-people'
 Plug 'guns/vim-sexp'
 Plug 'tpope/vim-repeat'
-
-
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
-Plug 'quangnguyen30192/cmp-nvim-ultisnips'
-
 "}}}
 
 " More preamble {{{
@@ -185,9 +172,6 @@ nmap <leader>tp :tabprevious<CR>
 nmap <leader>zz :set foldlevel=0<CR>
 nmap <leader>za :set foldlevel=9999<CR>
 
-" Emmet
-nmap <leader>e <C-y>,
-
 " Telescope
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>ag <cmd>lua require('telescope.builtin').live_grep()<cr>
@@ -223,42 +207,41 @@ let g:airline_detect_modified=1
 let g:airline_detect_paste=1
 " }}} /airline
 
-" Vimwiki {{{
-let g:vimwiki_list = [{'path': '~/wiki/', 'auto_diary_index': 1, 'auto_generate_links': 1, 'auto_generate_tags': 1, 'auto_tags': 1 }]
-" }}}
-
 " Python stuff {{{
 let g:pymode_python='python3'
 " }}}
 
 " General LSP Config {{{
-set completeopt=menu,menuone,noselect
+"set completeopt=menu,menuone,noselect
 
 lua << EOF
   -- Setup nvim-cmp.
   local cmp = require'cmp'
 
   cmp.setup({
-    snippet = {
-      -- REQUIRED - you must specify a snippet engine
-      expand = function(args)
-        vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
-      end,
-    },
-    mapping = {
+		window = {
+			--completion = cmp.config.window.bordered(),
+			--documentation = cmp.config.window.bordered(),
+		},
+    mapping = cmp.mapping.preset.insert({
       ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
       ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
-      ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
+			['<C-Space>'] = cmp.mapping(cmp.mapping.complete({
+				config = {
+					sources = {
+						name = 'nvim_lsp'
+						}
+					}
+			}), { 'i', 'c' }),
       ['<C-y>'] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
       ['<C-e>'] = cmp.mapping({
         i = cmp.mapping.abort(),
         c = cmp.mapping.close(),
       }),
       ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-    },
+    }),
     sources = cmp.config.sources({
       { name = 'nvim_lsp' },
-      { name = 'ultisnips' }, -- For ultisnips users.
     }, {
       { name = 'buffer' },
     })
@@ -301,7 +284,7 @@ local on_attach = function(client, bufnr)
 	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rr', "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
 end
 
-local servers = { 'tsserver', 'clojure_lsp', 'pyright' }
+local servers = { 'tsserver', 'clojure_lsp', 'pyright', 'jsonnet_ls', 'gopls' }
 -- Setup lspconfig.
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 for _, lsp in pairs(servers) do
