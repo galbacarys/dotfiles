@@ -282,6 +282,7 @@ local on_attach = function(client, bufnr)
 	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gsa', "<cmd>lua require('telescope.builtin').lsp_workspace_symbols()<CR>", opts)
 	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gca', "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
 	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rr', "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
+	vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ge', "<cmd>lua require('telescope.builtin').diagnostics()<CR>", opts)
 end
 
 local servers = { 'tsserver', 'clojure_lsp', 'pyright', 'jsonnet_ls', 'gopls' }
