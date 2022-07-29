@@ -50,6 +50,8 @@ Plug 'easymotion/vim-easymotion'
 
 Plug 'mhinz/vim-startify'
 
+Plug 'ap/vim-css-color'
+
 " Autocompletion plugins
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -64,6 +66,7 @@ Plug 'hrsh7th/nvim-cmp'
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'google/vim-jsonnet'
+Plug 'prettier/vim-prettier'
 
 Plug 'hashivim/vim-terraform'
 
@@ -301,14 +304,18 @@ end
 EOF
 " }}}
 
-" Snippets {{{
-let g:UltiSnipsJumpForwardTrigger="<C-n>"
-let g:UltiSnipsJumpBackwardTrigger="<C-p>"
-
-let g:UltiSnipsExpandTrigger="<c-e>"
+" {{{  Prettier
+let g:prettier#autoformat = 1
+let g:prettier#autoformat_require_pragma = 0
+" to avoid dumb whitespace issues
+let g:gitgutter_diff_args = '-w'
 " }}}
 
-
+" startify
+" {{{
+let g:startify_change_to_dir = 0
+let g:startify_change_to_vcs_root = 1
+" }}}
 " }}} /plugins
 
 " Per-language augroups {{{
