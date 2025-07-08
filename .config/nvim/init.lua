@@ -33,3 +33,15 @@ vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
 vim.expandtab = false
 
+-- visual navigation
+vim.api.nvim_set_keymap('n', 'j', 'gj', {noremap = true, silent = true})
+vim.api.nvim_set_keymap('n', 'k', 'gk', {noremap = true, silent = true})
+
+-- Markdown specific settings -- doing this in vim because I'm layzey
+vim.cmd [[
+	augroup _markdown
+		autocmd!
+		autocmd FileType markdown setlocal wrap
+		autocmd FileType markdown setlocal linebreak
+		autocmd FileType markdown setlocal spell
+]]

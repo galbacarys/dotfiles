@@ -1,6 +1,22 @@
 vim.opt.mouse = ''
 vim.opt.number = true
 
+df_mode = false
+
+function distraction_free_mode_toggle()
+	require('lualine').hide({ unhide = df_mode })
+	df_mode = not df_mode
+	if df_mode then
+		vim.cmd [[ Goyo ]]
+		vim.cmd [[ Limelight ]]
+	else
+		vim.cmd [[ Goyo! ]]
+		vim.cmd [[ Limelight! ]]
+	end
+end
+	
+vim.keymap.set('n', '<leader>df', distraction_free_mode_toggle)
+
 return {
 	-- color scheme
 	{
@@ -27,5 +43,12 @@ return {
 		init = function()
 			require('gitsigns').setup {}
 		end
+	},
+	-- distraction-free mode
+	{
+		'junegunn/goyo.vim'
+	},
+	{
+		'junegunn/limelight.vim'
 	}
 }
