@@ -17,6 +17,8 @@ end
 	
 vim.keymap.set('n', '<leader>df', distraction_free_mode_toggle)
 
+vim.keymap.set('t', '<C-\\>', '<C-\\><C-n>')
+
 return {
 	-- color scheme
 	{

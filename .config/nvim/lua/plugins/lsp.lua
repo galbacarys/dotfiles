@@ -2,11 +2,14 @@
 
 return {
 	{ 'neovim/nvim-lspconfig' },
-	{ 
-		'williamboman/mason.nvim',
-		config = function()
-			require('mason').setup()
-		end
+	{
+		'mason-org/mason.nvim',
+		opts = {}
+	},
+	{
+		'mason-org/mason-lspconfig.nvim',
+		dependencies = { 'neovim/nvim-lspconfig', 'williamboman/mason.nvim' },
+		opts = {}
 	},
 	{
 		'hrsh7th/nvim-cmp',
@@ -53,81 +56,19 @@ return {
 	{
 		'hrsh7th/cmp-nvim-lsp',
 		dependencies = { 'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp' },
-		config = function()
-			local caps = require("cmp_nvim_lsp").default_capabilities()
-
-			-- get everything set up for our known language servers
-			local lspconfig = require('lspconfig')
-
-			local servers = { 'jdtls', 'gopls', 'pyright' }
-			for _, lsp in ipairs(servers) do
-				if lsp ~= 'jdtls' then -- Java has its own special handling, see below
-					lspconfig[lsp].setup {
-						capabilities = caps,
-					}
-				end
-			end
-		end,
+		lazy = false,
 		keys = {
 			{ '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<cr>', desc = 'Code Actions' },
+			{ '<leader>h', '<cmd> lua vim.lsp.buf.hover()<cr>', desc = 'LSP Hover' }
 		}
 	},
 	{
-		'mfussenegger/nvim-jdtls',
+		'rachartier/tiny-inline-diagnostic.nvim',
+		event = 'VeryLazy',
+		priority = 1000,
 		config = function()
-			vim.api.nvim_create_autocmd('FileType', {
-				pattern = 'java',
-				callback = function()
-					-- Java specific bollocks
-					local root_markers = { '.git', 'mvnw', 'gradlew', 'pom.xml', 'build.gradle' }
-					local root_dir = require('jdtls.setup').find_root(root_markers)
-
-					local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
-					local workspace_dir = vim.fn.stdpath "data" .. "/site/java/workspace-root/" .. project_name
-					os.execute('mkdir -p ' .. workspace_dir)
-
-					-- mason install path
-					local installpath = require('mason-registry').get_package('jdtls'):get_install_path()
-
-					local os
-					if vim.fn.has 'macunix' then
-						os = 'mac'
-					elseif vim.fn.has 'win32' then
-						os = 'win'
-					else
-						os = 'linux'
-					end
-
-					require('jdtls').start_or_attach({
-						capabilities = caps,
-						cmd = {
-							"java",
-							"-Declipse.application=org.eclipse.jdt.ls.core.id1",
-							"-Dosgi.bundles.defaultStartLevel=4",
-							"-Declipse.product=org.eclipse.jdt.ls.core.product",
-							"-Dlog.protocol=true",
-							"-Dlog.level=ALL",
-							"-javaagent:" .. installpath .. "/lombok.jar",
-							"-Xms1g",
-							"--add-modules=ALL-SYSTEM",
-							"--add-opens",
-							"java.base/java.util=ALL-UNNAMED",
-							"--add-opens",
-							"java.base/java.lang=ALL-UNNAMED",
-							"-jar",
-							vim.fn.glob(installpath .. "/plugins/org.eclipse.equinox.launcher_*.jar"),
-							"-configuration",
-							installpath .. "/config_" .. os,
-							"-data",
-							workspace_dir,
-						},
-						root_dir = function()
-							return root_dir
-						end
-				})
-				end
-			})
-			return true
+			require('tiny-inline-diagnostic').setup()
+			vim.diagnostic.config({ virtual_text = false })
 		end
 	}
 }

@@ -34,10 +34,28 @@ return {
 					}
 				}
 			}
-			print("we're here")
 			require('telescope').load_extension('ui-select')
 		end,
 
+	},
+	{
+		-- we do the AI's now
+		"greggh/claude-code.nvim",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+		},
+		config = function()
+			command = 'claude'
+			if vim.fn.has 'macunix' then
+				command = 'newt --app-type=java-project claude' -- work specific stuff
+			end
+			require("claude-code").setup({
+				command = command,
+				window = {
+					position = "vertical"
+				}
+			})
+		end
 	},
 	-- Treeeeees, they are us
 	{
@@ -54,10 +72,16 @@ return {
 	{
 		'folke/trouble.nvim',
 		dependencies = { 'nvim-tree/nvim-web-devicons' },
+		opts = {
+			focus = true,
+			warn_no_results = false,
+			open_no_results = true
+		},
+		cmd = 'Trouble',
 		keys = {
-			{ '<leader>qf', '<cmd>TroubleToggle workspace_diagnostics<cr>', desc = 'Workspace Diagnostics' },
-			{ '<leader>gd', '<cmd>TroubleToggle lsp_references<cr>', desc = 'LSP references' },
-			{ '<leader>gD', '<cmd>TroubleToggle lsp_definitions<cr>', desc = 'LSP definitions' },
+			{ '<leader>qf', '<cmd>Trouble diagnostics toggle<cr>', desc = 'Workspace Diagnostics' },
+			{ '<leader>gd', '<cmd>Trouble lsp toggle<cr>', desc = 'LSP omnifinder' },
+			{ '<leader>gD', '<cmd>Trouble lsp_definitions toggle<cr>', desc = 'LSP definitions' },
 		}
 	},
 }
